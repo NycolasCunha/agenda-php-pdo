@@ -24,9 +24,10 @@ try {
     echo "Conexão efetuada com sucesso!";
 
 } 
-//  Se algo der errado no bloco "try", o "catch" (capturar) entra em ação imediatamente
+    //  Se algo der errado no bloco "try", o "catch" (capturar) entra em ação imediatamente
 catch (PDOException $e) {
     
     // Interrompe o site e mostra uma mensagem limpa e controlada do erro
     die("Erro ao ligar ao banco de dados: " . $e->getMessage());
 }
+?>
