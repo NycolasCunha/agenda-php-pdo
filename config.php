@@ -21,7 +21,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
     // Linha temporária apenas para testarmos no navegador se funcionou:
-    echo "Conexão efetuada com sucesso!";
+    //echo "Conexão efetuada com sucesso!";
 
 } 
     //  Se algo der errado no bloco "try", o "catch" (capturar) entra em ação imediatamente
