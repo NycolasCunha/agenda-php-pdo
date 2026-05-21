@@ -1,23 +1,14 @@
 <?php 
+
 require_once 'config.php';
+include_once 'funcoes.php'; // Inclui o arquivo de funções que você acabou de criar
 
-// 2. Cria a consulta SQL para selecionar todos os contactos
-$sql = "SELECT * FROM contatos ORDER BY nome ASC";
+// Agora chamamos a função isolada em vez de fazer o SQL direto aqui
+$contatos = obterContatos($pdo);
 
-try {
-    // 3. Executa a consulta de forma direta utilizando o método query()
-    $stmt = $pdo->query($sql);
-    
-    // 4. Procura todos os registos de uma vez e guarda-os na variável $contatos
-    $contatos = $stmt->fetchAll();
-
-} catch (PDOException $e) {
-    // Caso haja algum erro na tabela, interrompe e avisa
-    die("Erro ao procurar contactos: " . $e->getMessage());
-}
-
-// 5. Inclui o cabeçalho visual da nossa página (HTML inicial)
+// Inclui o cabeçalho visual da nossa página
 include 'cabecalho.php';
+
 ?>
 
 <div class="container">
