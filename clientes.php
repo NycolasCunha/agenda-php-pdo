@@ -1,16 +1,10 @@
 <?php
-// 1. Inclui a conexão com o banco
 require_once 'config.php';
+include_once 'funcoes.php';
 
-// 2. Consulta simples para puxar os clientes
-try {
-    $stmt = $pdo->query("SELECT * FROM clientes ORDER BY nome ASC");
-    $clientes = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Erro ao buscar clientes: " . $e->getMessage());
-}
+// Chamada utilizando a função centralizada
+$clientes = obterClientes($pdo);
 
-// 3. Inclui o visual do topo
 include 'cabecalho.php';
 ?>
 
@@ -18,8 +12,7 @@ include 'cabecalho.php';
     <h2>👥 Gerenciamento de Clientes</h2>
     
     <p>
-        <a href="index.php" style="text-decoration: none; color: #007BFF; margin-right: 15px;">📇 Ver Contatos</a>
-        <a href="clientes-cadastrar.php" style="background-color: #28a745; color: white; padding: 7px 12px; text-decoration: none; border-radius: 4px;">➕ Novo Cliente</a>
+        <a href="clientes-cadastrar.php" class="btn-novo" style="background-color: #28a745;">➕ Novo Cliente</a>
     </p>
 
     <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; margin-top: 20px; border-collapse: collapse; text-align: left;">

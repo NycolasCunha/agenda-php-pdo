@@ -4,61 +4,74 @@ require_once 'config.php';
 $mensagem = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Pega os dados vindos do formulário
     $nome = $_POST['nome'] ?? '';
     $descricao = $_POST['descricao'] ?? '';
     $preco = $_POST['preco'] ?? 0;
     $estoque = $_POST['estoque'] ?? 0;
+    $imagemNome = ''; 
 
-    // Validação simples: Nome, Preço e Estoque são obrigatórios
-    if (!empty($nome) && $preco !== '' && $estoque !== '') {
+    // Lógica para upload de imagem (Tarefas 33 e 39)
+    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+        $extensao = pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION);
+        $imagemNome = uniqid() . "." . $extensao; // Evita arquivos duplicados com o mesmo nome
+        
+        if (!is_dir('uploads')) {
+            mkdir('uploads', 0777, true);
+        }
+
+        move_uploaded_file($_FILES['imagem']['tmp_name'], 'uploads/' . $imagemNome);
+    }
+
+    if (!empty($nome) && $preco > 0) {
         try {
-            // Prepared Statement padrão e seguro
-            $sql = "INSERT INTO produtos (nome, descricao, preco, estoque) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO produtos (nome, descricao, preco, estoque, imagem) VALUES (?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nome, $descricao, $preco, $estoque]);
-
+            $stmt->execute([$nome, $descricao, $preco, $estoque, $imagemNome]);
+            
             $mensagem = "<p style='color: green; font-weight: bold;'>✅ Produto cadastrado com sucesso!</p>";
         } catch (PDOException $e) {
-            $mensagem = "<p style='color: red;'>❌ Erro ao salvar produto: " . $e->getMessage() . "</p>";
+            $mensagem = "<p style='color: red; font-weight: bold;'>❌ Erro ao salvar produto: " . $e->getMessage() . "</p>";
         }
     } else {
-        $mensagem = "<p style='color: orange;'>⚠️ Por favor, preencha todos os campos obrigatórios (*).</p>";
+        $mensagem = "<p style='color: orange; font-weight: bold;'>⚠️ Insira um nome e preço válidos.</p>";
     }
 }
 
 include 'cabecalho.php';
 ?>
 
-<div class="container" style="max-width: 500px; margin: 30px auto; font-family: Arial, sans-serif;">
+<div class="container" style="max-width: 600px;">
     <h2>➕ Cadastrar Novo Produto</h2>
-    <a href="produtos.php" style="text-decoration: none; color: #007BFF;">⬅️ Voltar para a lista de produtos</a>
+    <a href="produtos.php" style="color: #007BFF; text-decoration: none; font-weight: bold;">⬅️ Voltar para Produtos</a>
     
     <?php echo $mensagem; ?>
 
-    <form action="produtos-cadastrar.php" method="POST" style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+    <form action="produtos-cadastrar.php" method="POST" enctype="multipart/form-data" style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
         <div>
-            <label style="display: block; margin-bottom: 3px; font-weight: bold;">Nome do Produto *</label>
-            <input type="text" name="nome" required style="width: 100%; padding: 8px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nome do Produto *</label>
+            <input type="text" name="nome" required style="width: 100%; padding: 8px; box-sizing: border-box;">
         </div>
 
         <div>
-            <label style="display: block; margin-bottom: 3px; font-weight: bold;">Descrição</label>
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Descrição</label>
             <textarea name="descricao" rows="3" style="width: 100%; padding: 8px; box-sizing: border-box;"></textarea>
         </div>
 
         <div>
-            <label style="display: block; margin-bottom: 3px; font-weight: bold;">Preço (Ex: 99.90) *</label>
-            <input type="number" name="preco" step="0.01" min="0" required style="width: 100%; padding: 8px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Preço (R$) *</label>
+            <input type="number" step="0.01" name="preco" required style="width: 100%; padding: 8px; box-sizing: border-box;">
         </div>
 
         <div>
-            <label style="display: block; margin-bottom: 3px; font-weight: bold;">Quantidade em Estoque *</label>
-            <input type="number" name="estoque" min="0" required style="width: 100%; padding: 8px;">
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Quantidade em Estoque *</label>
+            <input type="number" name="estoque" value="0" required style="width: 100%; padding: 8px; box-sizing: border-box;">
         </div>
 
-        <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px; cursor: pointer; font-size: 16px; border-radius: 4px; margin-top: 10px;">
-            💾 Salvar Produto
-        </button>
+        <div>
+            <label style="display: block; font-weight: bold; margin-bottom: 5px;">Imagem do Produto</label>
+            <input type="file" name="imagem" accept="image/*">
+        </div>
+
+        <button type="submit" style="background-color: #3498db; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; width: fit-content;">💾 Salvar Produto</button>
     </form>
 </div>

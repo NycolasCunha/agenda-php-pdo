@@ -1,16 +1,10 @@
 <?php
-// 1. Inclui a ligação com o banco de dados
 require_once 'config.php';
+include_once 'funcoes.php';
 
-// 2. Consulta simples para buscar os produtos
-try {
-    $stmt = $pdo->query("SELECT * FROM produtos ORDER BY nome ASC");
-    $produtos = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Erro ao buscar produtos: " . $e->getMessage());
-}
+// Chamada utilizando a função centralizada
+$produtos = obterProdutos($pdo);
 
-// 3. Inclui o cabeçalho visual
 include 'cabecalho.php';
 ?>
 
@@ -18,15 +12,14 @@ include 'cabecalho.php';
     <h2>📦 Gerenciamento de Produtos</h2>
     
     <p>
-        <a href="index.php" style="text-decoration: none; color: #007BFF; margin-right: 15px;">📇 Ver Contatos</a>
-        <a href="produtos-cadastrar.php" style="background-color: #28a745; color: white; padding: 7px 12px; text-decoration: none; border-radius: 4px;">➕ Novo Produto</a>
+        <a href="produtos-cadastrar.php" class="btn-novo" style="background-color: #28a745;">➕ Novo Produto</a>
     </p>
 
     <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; margin-top: 20px; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="background-color: #f2f2f2;">
                 <th>ID</th>
-                <th>Nome</th>
+                <th>Imagem</th> <th>Nome</th>
                 <th>Descrição</th>
                 <th>Preço</th>
                 <th>Estoque</th>
@@ -37,6 +30,13 @@ include 'cabecalho.php';
                 <?php foreach ($produtos as $produto): ?>
                     <tr>
                         <td><?php echo $produto['id']; ?></td>
+                        <td>
+                            <?php if(!empty($produto['imagem'])): ?>
+                                <img src="uploads/<?php echo $produto['imagem']; ?>" width="50" height="50" style="object-fit: cover; border-radius: 4px;">
+                            <?php else: ?>
+                                <span style="color: #999; font-size: 12px;">Sem foto</span>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo htmlspecialchars($produto['nome']); ?></td>
                         <td><?php echo htmlspecialchars($produto['descricao']); ?></td>
                         <td>R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></td>
@@ -45,7 +45,7 @@ include 'cabecalho.php';
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="5" style="text-align: center;">Nenhum produto cadastrado.</td>
+                    <td colspan="6" style="text-align: center;">Nenhum produto cadastrado.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
