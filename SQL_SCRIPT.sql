@@ -28,12 +28,14 @@ CREATE TABLE clientes (
 -- 5. Criar a tabela 'produtos'
 CREATE TABLE produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(255) NOT NULL, 
     descricao TEXT,
     preco DECIMAL(10,2) NOT NULL,
     estoque INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    imagem VARCHAR(255),        -- Obrigatório para o produtos-cadastrar.php e produtos.php
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Bom para controle interno
 );
+
 
 -- --------------------------------------------------------
 -- 6. Inserir registros de exemplo (Dados de Teste)
